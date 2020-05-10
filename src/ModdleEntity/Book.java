@@ -2,6 +2,7 @@ package ModdleEntity;
 // Generated May 8, 2020 9:58:33 AM by Hibernate Tools 4.3.1
 
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,14 +21,14 @@ public class Book  implements java.io.Serializable {
      private String bookId;
      private String bookTitle;
      private String publishingHouse;
-     private String dateOfPublication;
+     private Date dateOfPublication;
      private String author;
      private int pages;
 
     public Book() {
     }
 
-    public Book(String bookId, String bookTitle, String publishingHouse, String dateOfPublication, String author, int pages) {
+    public Book(String bookId, String bookTitle, String publishingHouse, Date dateOfPublication, String author, int pages) {
        this.bookId = bookId;
        this.bookTitle = bookTitle;
        this.publishingHouse = publishingHouse;
@@ -70,11 +71,11 @@ public class Book  implements java.io.Serializable {
 
     
     @Column(name="dateOfPublication", nullable=false, length=20)
-    public String getDateOfPublication() {
+    public Date getDateOfPublication() {
         return this.dateOfPublication;
     }
     
-    public void setDateOfPublication(String dateOfPublication) {
+    public void setDateOfPublication(Date dateOfPublication) {
         this.dateOfPublication = dateOfPublication;
     }
 
@@ -97,9 +98,6 @@ public class Book  implements java.io.Serializable {
     public void setPages(int pages) {
         this.pages = pages;
     }
-
-
-
 
 }
 

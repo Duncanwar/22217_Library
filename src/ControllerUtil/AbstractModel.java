@@ -59,5 +59,63 @@ public class  AbstractModel<T> {
         
     }
     
-    public 
+    public boolean create(T entity) {
+		boolean result = true;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			session.save(entity);
+			transaction.commit();
+		} catch (Exception e) {
+			result = false;
+			if(transaction != null) {
+				transaction.rollback();
+			}
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
+	public boolean update(T entity) {
+		boolean result = true;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			session.update(entity);
+			transaction.commit();
+		} catch (Exception e) {
+			result = false;
+			if(transaction != null) {
+				transaction.rollback();
+			}
+		} finally {
+			session.close();
+		}
+		return result;
+	}
+
+	public boolean delete(T entity) {
+		boolean result = true;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			session.delete(entity);
+			transaction.commit();
+		} catch (Exception e) {
+			result = false;
+			if(transaction != null) {
+				transaction.rollback();
+			}
+		} finally {
+			session.close();
+		}
+		return result;
+	}
 }
