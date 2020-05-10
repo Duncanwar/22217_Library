@@ -4,11 +4,13 @@
  * and open the template in the editor.
  */
 package ControllerUtil;
-
+import ModdleEntity.*;
 /**
  *
  * @author duncan
  */
-public class clientController {
-    
+public class BookController extends AbstractModel<Book> {
+  public BookController(){
+      super(Book.class);
+  }  
 }
