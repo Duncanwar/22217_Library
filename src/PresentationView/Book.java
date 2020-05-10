@@ -81,6 +81,8 @@ public class Book extends javax.swing.JInternalFrame {
 
         jDialog1 = new javax.swing.JDialog();
         jCalendar1 = new com.toedter.calendar.JCalendar();
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItemDelete = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -107,6 +109,7 @@ public class Book extends javax.swing.JInternalFrame {
         txtauthor = new javax.swing.JTextField();
         txtpages = new javax.swing.JTextField();
         txtDateOfPublication = new com.toedter.calendar.JDateChooser();
+        jButtonDelete = new javax.swing.JButton();
 
         javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
         jDialog1.getContentPane().setLayout(jDialog1Layout);
@@ -118,6 +121,14 @@ public class Book extends javax.swing.JInternalFrame {
             jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 300, Short.MAX_VALUE)
         );
+
+        jMenuItemDelete.setText("Delete");
+        jMenuItemDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemDeleteActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(jMenuItemDelete);
 
         jTabbedPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -206,6 +217,7 @@ public class Book extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        txttable1.setComponentPopupMenu(jPopupMenu1);
         txttable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 txttable1MouseClicked(evt);
@@ -314,6 +326,13 @@ public class Book extends javax.swing.JInternalFrame {
                 .addContainerGap(63, Short.MAX_VALUE))
         );
 
+        jButtonDelete.setText("Delete");
+        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -328,7 +347,9 @@ public class Book extends javax.swing.JInternalFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(266, 266, 266)
-                        .addComponent(save)))
+                        .addComponent(save)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonDelete)))
                 .addGap(0, 0, 0))
         );
         jPanel1Layout.setVerticalGroup(
@@ -337,7 +358,9 @@ public class Book extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(save)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(save)
+                    .addComponent(jButtonDelete))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
@@ -431,6 +454,34 @@ public class Book extends javax.swing.JInternalFrame {
     private void txttable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txttable1MouseClicked
         // TODO add your handling code here:
         try{
+       
+            int index = this.txttable1.getSelectedRow();
+            String bookId = this.txttable1.getValueAt(index, 0).toString();
+         //   String pages = Integer.toString(book.getPages());
+            ModdleEntity.Book book = this.bookController.find(bookId);
+            this.txtbookId.setText(book.getBookId());
+            this.txttitle.setText(book.getBookTitle());
+            this.txtPublishingHouse.setText(book.getPublishingHouse());
+            this.txtDateOfPublication.setDate(book.getDateOfPublication());
+            this.txtauthor.setText(book.getAuthor());
+            this.txtpages.setText(Integer.toString(book.getPages()));
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_txttable1MouseClicked
+
+    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
+        // TODO add your handling code here:
+        Delete();
+    }//GEN-LAST:event_jButtonDeleteActionPerformed
+
+    private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDeleteActionPerformed
+        // TODO add your handling code here:
+        Delete();
+    }//GEN-LAST:event_jMenuItemDeleteActionPerformed
+
+    private void Delete(){
+         try{
         int result = JOptionPane.showConfirmDialog(null, "Are you Sure", "confirm",JOptionPane.YES_NO_OPTION);
         if(result == JOptionPane.YES_OPTION){
             int index = this.txttable1.getSelectedRow();
@@ -441,11 +492,11 @@ public class Book extends javax.swing.JInternalFrame {
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
-    }//GEN-LAST:event_txttable1MouseClicked
-
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnaddBook;
+    private javax.swing.JButton jButtonDelete;
     private com.toedter.calendar.JCalendar jCalendar1;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
@@ -456,9 +507,11 @@ public class Book extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JMenuItem jMenuItemDelete;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
