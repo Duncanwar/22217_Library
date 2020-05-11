@@ -5,6 +5,7 @@
  */
 package PresentationView;
 
+import ControllerUtil.BookController;
 import ModdleEntity.*;
 import ControllerUtil.*;
 import java.sql.*;
@@ -19,7 +20,9 @@ import net.proteanit.sql.DbUtils;
  */
 public class Book extends javax.swing.JInternalFrame {
  private final BookController bookController = new BookController();
-    private ModdleEntity.Book book = new ModdleEntity.Book();
+ private final bookCategoryController categoryController = new bookCategoryController();
+ private ModdleEntity.BookCategory bookCategory = new ModdleEntity.BookCategory();
+ private ModdleEntity.Book book = new ModdleEntity.Book();
     Connection conn;
  Statement st;
  PreparedStatement pst;
@@ -42,16 +45,26 @@ public class Book extends javax.swing.JInternalFrame {
     @SuppressWarnings("unchecked")
     
     public void clear(){
+        // clear fields of book
         this.txtbookId.setText("");
         this.txttitle.setText("");
         this.txtPublishingHouse.setText("");
         this.txtDateOfPublication.setDate(null);
         this.txtauthor.setText("");
         this.txtpages.setText("");
+        
+        // clear fields of bookCategory
+        
+        this.txtCategoryId.setText("");
+        this.txtCategoryName.setText("");
+        
     }
     
     public void UpdateTable(){
         DefaultTableModel dtm = new DefaultTableModel();
+        DefaultTableModel dtm1 = new DefaultTableModel();
+        dtm1.addColumn(("category_id"));
+        dtm1.addColumn(("category_name"));
         dtm.addColumn(("bookId"));
         dtm.addColumn(("bookTitle"));
         dtm.addColumn(("publishingHouse"));
@@ -62,7 +75,12 @@ public class Book extends javax.swing.JInternalFrame {
             dtm.addRow(new Object[] {book.getBookId(), book.getBookTitle(), book.getPublishingHouse() , book.getDateOfPublication() , book.getAuthor(), book.getPages()});
      });
         this.txttable1.setModel(dtm);
+        this.categoryController.findAll().stream().forEach((bookCategory)->{
+            dtm1.addRow(new Object[] {bookCategory.getCategoryId(), bookCategory.getCategoryName()});            
+        });
+        this.txtTable.setModel(dtm1);
             }
+    
 //     try {
 //         String sql="select * from book";
 //         pst=conn.prepareStatement(sql);
@@ -90,8 +108,6 @@ public class Book extends javax.swing.JInternalFrame {
 
         jDialog1 = new javax.swing.JDialog();
         jCalendar1 = new com.toedter.calendar.JCalendar();
-        jPopupMenu1 = new javax.swing.JPopupMenu();
-        jMenuItemDelete = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -101,6 +117,9 @@ public class Book extends javax.swing.JInternalFrame {
         btnaddBook = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtTable = new javax.swing.JTable();
+        jButton1Delete = new javax.swing.JButton();
+        jButton2Update = new javax.swing.JButton();
+        jButton3Clear = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txttable1 = new javax.swing.JTable();
@@ -133,14 +152,6 @@ public class Book extends javax.swing.JInternalFrame {
             .addGap(0, 300, Short.MAX_VALUE)
         );
 
-        jMenuItemDelete.setText("Delete");
-        jMenuItemDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemDeleteActionPerformed(evt);
-            }
-        });
-        jPopupMenu1.add(jMenuItemDelete);
-
         jTabbedPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jPanel2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -172,7 +183,33 @@ public class Book extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        txtTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(txtTable);
+
+        jButton1Delete.setText("Delete");
+        jButton1Delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1DeleteActionPerformed(evt);
+            }
+        });
+
+        jButton2Update.setText("Update");
+        jButton2Update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2UpdateActionPerformed(evt);
+            }
+        });
+
+        jButton3Clear.setText(" Clear");
+        jButton3Clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ClearActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -191,11 +228,17 @@ public class Book extends javax.swing.JInternalFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(72, 72, 72)
-                        .addComponent(btnaddBook))
+                        .addComponent(btnaddBook)
+                        .addGap(27, 27, 27)
+                        .addComponent(jButton1Delete)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton2Update)
+                        .addGap(47, 47, 47)
+                        .addComponent(jButton3Clear))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(37, 37, 37)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(821, Short.MAX_VALUE))
+                .addContainerGap(524, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -209,10 +252,14 @@ public class Book extends javax.swing.JInternalFrame {
                     .addComponent(jLabel8)
                     .addComponent(txtCategoryName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
-                .addComponent(btnaddBook)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnaddBook)
+                    .addComponent(jButton1Delete)
+                    .addComponent(jButton2Update)
+                    .addComponent(jButton3Clear))
+                .addGap(75, 75, 75)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(321, Short.MAX_VALUE))
+                .addContainerGap(160, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Book Category", jPanel2);
@@ -228,7 +275,6 @@ public class Book extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        txttable1.setComponentPopupMenu(jPopupMenu1);
         txttable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 txttable1MouseClicked(evt);
@@ -423,7 +469,14 @@ public class Book extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCategoryIdActionPerformed
 
     private void btnaddBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnaddBookActionPerformed
-//     try {
+   try {
+       bookCategory.setCategoryId(this.txtCategoryId.getText());
+       bookCategory.setCategoryName(this.txtCategoryName.getText());
+       this.categoryController.create(bookCategory);
+       JOptionPane.showMessageDialog(null, "Added a category successful");
+       UpdateTable();
+       clear();
+//   JDBC querying
 //         // TODO add your handling code here:
 //         String categoryName=txtCategoryName.getText();
 //         String categoryId=txtCategoryId.getText();
@@ -435,9 +488,10 @@ public class Book extends javax.swing.JInternalFrame {
 //         System.out.println("saved book categoty");
 //         UpdateTableCategory();
 //         pst.close();
-//     } catch (SQLException ex) {
-//         Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
-//     }
+     } catch (Exception ex) {
+         Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
+         JOptionPane.showMessageDialog(null, ex.getMessage());
+     }
     }//GEN-LAST:event_btnaddBookActionPerformed
 
     private void txtbookIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbookIdActionPerformed
@@ -487,7 +541,6 @@ public class Book extends javax.swing.JInternalFrame {
     private void update(){
         int index = this.txttable1.getSelectedRow();
         String bookId = this.txttable1.getValueAt(index, 0).toString();
-        //   String pages = Integer.toString(book.getPages());
         ModdleEntity.Book book = this.bookController.find(bookId);
         this.txtbookId.setText(book.getBookId());
         this.txttitle.setText(book.getBookTitle());
@@ -499,7 +552,6 @@ public class Book extends javax.swing.JInternalFrame {
     private void txttable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txttable1MouseClicked
         // TODO add your handling code here:
         try{
-       
             update();
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -511,12 +563,6 @@ public class Book extends javax.swing.JInternalFrame {
         Delete();
          clear();
     }//GEN-LAST:event_jButtonDeleteActionPerformed
-
-    private void jMenuItemDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDeleteActionPerformed
-        // TODO add your handling code here:
-        Delete();
-         clear();
-    }//GEN-LAST:event_jMenuItemDeleteActionPerformed
 
     private void jButton1UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1UpdateActionPerformed
         // TODO add your handling code here:
@@ -541,14 +587,72 @@ public class Book extends javax.swing.JInternalFrame {
          clear();
     }//GEN-LAST:event_jButton1ClearActionPerformed
 
+    private void jButton3ClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ClearActionPerformed
+        // TODO add your handling code here:
+        clear();
+    }//GEN-LAST:event_jButton3ClearActionPerformed
+
+    private void txtTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtTableMouseClicked
+        // TODO add your handling code here:
+        try{
+            int index = this.txtTable.getSelectedRow();
+            String categoryId = this.txtTable.getValueAt(index, 0).toString();
+            bookCategory = this.categoryController.find(categoryId);
+            this.txtCategoryId.setText(bookCategory.getCategoryId());
+            this.txtCategoryName.setText(bookCategory.getCategoryName());
+        }
+        catch(Exception e){
+            
+        }
+        
+    }//GEN-LAST:event_txtTableMouseClicked
+
+    private void jButton1DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1DeleteActionPerformed
+        // TODO add your handling code here:
+        try{
+             int result = JOptionPane.showConfirmDialog(null, "Are you Sure", "confirm",JOptionPane.YES_NO_OPTION);
+        if(result == JOptionPane.YES_OPTION){
+         int index1 = this.txtTable.getSelectedRow();
+            String categoryId = this.txtTable.getValueAt(index1, 0).toString();
+            bookCategory = this.categoryController.find(categoryId);
+            this.categoryController.delete(bookCategory);
+            UpdateTable();
+        }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        clear();
+    }//GEN-LAST:event_jButton1DeleteActionPerformed
+
+    private void jButton2UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2UpdateActionPerformed
+        // TODO add your handling code here:
+        try{
+            bookCategory.setCategoryId(this.txtCategoryId.getText());
+            bookCategory.setCategoryName(this.txtCategoryName.getText());
+            this.categoryController.update(bookCategory);
+            UpdateTable();
+            clear();
+            
+        }catch(Exception e){
+            
+        }
+    }//GEN-LAST:event_jButton2UpdateActionPerformed
+
     private void Delete(){
          try{
         int result = JOptionPane.showConfirmDialog(null, "Are you Sure", "confirm",JOptionPane.YES_NO_OPTION);
         if(result == JOptionPane.YES_OPTION){
+            
+            // book delete
+            
             int index = this.txttable1.getSelectedRow();
             String bookId = this.txttable1.getValueAt(index, 0).toString();
             book = this.bookController.find(bookId);
             this.bookController.delete(book);
+            
+            // Category Delete
+            
+            
             UpdateTable();
         }
         }catch(Exception e){
@@ -559,7 +663,10 @@ public class Book extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnaddBook;
     private javax.swing.JButton jButton1Clear;
+    private javax.swing.JButton jButton1Delete;
     private javax.swing.JButton jButton1Update;
+    private javax.swing.JButton jButton2Update;
+    private javax.swing.JButton jButton3Clear;
     private javax.swing.JButton jButtonDelete;
     private com.toedter.calendar.JCalendar jCalendar1;
     private javax.swing.JDialog jDialog1;
@@ -571,11 +678,9 @@ public class Book extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JMenuItem jMenuItemDelete;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
