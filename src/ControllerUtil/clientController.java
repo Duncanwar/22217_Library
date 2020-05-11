@@ -11,10 +11,9 @@ import ModdleEntity.Client;
  *
  * @author duncan
  */
-//public class clientController extends AbstractModel<Client> {
-//    
-////    public clientController(){
-////        super(Client.class);
-////    }
-//    
-//}
+public class clientController extends AbstractModel<Client> {
+    
+    public clientController(){
+      super(Client.class);
+   }    
+}

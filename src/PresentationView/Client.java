@@ -9,8 +9,20 @@ import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.Dialog;
+import java.awt.Image;
+import java.io.File;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import net.proteanit.sql.DbUtils;
+
+
+import ControllerUtil.clientController;
+import ModdleEntity.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -19,7 +31,8 @@ import net.proteanit.sql.DbUtils;
 public class Client extends javax.swing.JInternalFrame {
 ResultSet rs;
 PreparedStatement pst;
-
+clientController clientController = new clientController();
+ModdleEntity.Client client = new ModdleEntity.Client();
     Connection conn;
     public Client() {
         initComponents();
@@ -28,12 +41,34 @@ PreparedStatement pst;
     }
     public void UpdateTable(){
      try {
-         String sql="select * from Client";
-         pst=conn.prepareStatement(sql);
-         rs=pst.executeQuery(sql);
-         txtTable.setModel(DbUtils.resultSetToTableModel(rs));
+         //Hibernate 
+         DefaultTableModel dtm = new DefaultTableModel();
+         dtm.addColumn(("regNo"));
+         dtm.addColumn(("firstName"));
+         dtm.addColumn(("lastName"));
+         dtm.addColumn(("phoneNumber"));
+         dtm.addColumn(("emailAddress"));
+         dtm.addColumn(("clientCategory"));
+         dtm.addColumn(("photo"));
          
-     } catch (SQLException ex) {
+         this.clientController.findAll().stream().forEach((client)->{
+         dtm.addRow(new Object [] 
+         {
+             client.getRegNo(), client.getFirstName(), client.getLastName(), client.getPhoneNumber() , client.getEmailAddress(), client.getClientCategory(), client.getPhoto()
+         });
+     });
+         this.txtTable.setModel(dtm);
+
+
+         
+         
+//        Jdbc query
+//         String sql="select * from Client";
+//         pst=conn.prepareStatement(sql);
+//         rs=pst.executeQuery(sql);
+//         txtTable.setModel(DbUtils.resultSetToTableModel(rs));
+//         
+     } catch (Exception ex) {
          Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
      }
     }
@@ -63,6 +98,8 @@ PreparedStatement pst;
         jPanel3 = new javax.swing.JPanel();
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         photo = new javax.swing.JLabel();
         btnphoto = new javax.swing.JButton();
@@ -73,15 +110,15 @@ PreparedStatement pst;
         setMaximizable(true);
         setResizable(true);
 
-        jLabel1.setText("jLabel1");
+        jLabel1.setText("RegNo");
 
-        jLabel2.setText("jLabel2");
+        jLabel2.setText("FirstName");
 
-        jLabel3.setText("jLabel2");
+        jLabel3.setText("LastName");
 
-        jLabel4.setText("jLabel2");
+        jLabel4.setText("PhoneNumber");
 
-        jLabel5.setText("jLabel2");
+        jLabel5.setText("EmailAddress");
 
         txtfirstName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -95,7 +132,7 @@ PreparedStatement pst;
             }
         });
 
-        jLabel7.setText("jLabel2");
+        jLabel7.setText("clientCategory");
 
         txtclientCategory.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Student", "Staff", "External", " " }));
 
@@ -119,7 +156,21 @@ PreparedStatement pst;
             }
         });
 
-        btnDelete.setText("jButton2");
+        btnDelete.setText("Delete ");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
+        btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
+
+        btnClear.setText("Clear");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -130,7 +181,11 @@ PreparedStatement pst;
                 .addComponent(btnSave)
                 .addGap(27, 27, 27)
                 .addComponent(btnDelete)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addGap(27, 27, 27)
+                .addComponent(btnUpdate)
+                .addGap(27, 27, 27)
+                .addComponent(btnClear)
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -138,26 +193,42 @@ PreparedStatement pst;
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete))
+                    .addComponent(btnDelete)
+                    .addComponent(btnUpdate)
+                    .addComponent(btnClear))
                 .addGap(518, 518, 518))
         );
 
         jPanel4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         photo.setText("photo");
+        photo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                photoMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(photo, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(photo, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(photo, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(photo, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         btnphoto.setText("Add photo");
+        btnphoto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnphotoActionPerformed(evt);
+            }
+        });
 
         txtTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -167,6 +238,11 @@ PreparedStatement pst;
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        txtTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(txtTable);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -174,59 +250,65 @@ PreparedStatement pst;
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4))
-                                .addGap(24, 24, 24))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(18, 18, 18)))
+                        .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtlastName)
-                                .addComponent(txtfirstName)
-                                .addComponent(txtregNo, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtemailAddress, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtphoneNumber, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtclientCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(16, 16, 16)))
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addComponent(jLabel5))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel7)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(107, 107, 107)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(txtlastName)
+                                        .addComponent(txtfirstName)
+                                        .addComponent(txtregNo, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(12, 12, 12)
-                                        .addComponent(btnphoto))
-                                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(16, 16, 16)
+                                        .addComponent(txtphoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(16, 16, 16)))
+                                .addGap(107, 107, 107))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(27, 27, 27)
-                                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(504, 504, 504))
+                                .addComponent(txtemailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(59, 59, 59)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addComponent(txtclientCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(817, 817, 817)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(182, 182, 182)
+                        .addComponent(btnphoto)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(100, 100, 100)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(txtregNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -237,36 +319,31 @@ PreparedStatement pst;
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
-                            .addComponent(txtlastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtphoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnphoto)))
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(txtemailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtclientCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 380, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
+                            .addComponent(txtlastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(txtphoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(txtemailAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(txtclientCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnphoto)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
@@ -283,35 +360,127 @@ PreparedStatement pst;
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         
             // TODO add your handling code here:
-            String regNo=txtregNo.getText();
-            String firstName=txtfirstName.getText();
-            String lastName=txtlastName.getText();
-            String phoneNumber=txtphoneNumber.getText();
+        try {
+        //hIBERNATE WORKING
+        client.setRegNo(this.txtregNo.getText());
+        client.setFirstName(this.txtfirstName.getText());
+        client.setLastName(this.txtlastName.getText());
+        client.setPhoneNumber(this.txtphoneNumber.getText());
+        client.setEmailAddress(this.txtemailAddress.getText());
+        client.setClientCategory(this.txtclientCategory.getSelectedItem().toString());
+        client.setPhoto(this.photo.getText().getBytes());
+        this.clientController.create(client);
+        // JDBC 
+          //  String regNo=txtregNo.getText();
+            //String firstName=txtfirstName.getText();
+        //    String lastName=txtlastName.getText();
+          //  String phoneNumber=txtphoneNumber.getText();
             
-            String emailAddress=txtemailAddress.getText();
-            String clientCategory=txtclientCategory.getSelectedItem().toString();
-            try {
-            String sql="Insert into Client values(?,?,?,?,?,?)";
-            PreparedStatement pt=conn.prepareStatement(sql);
-            pt.setString(1, regNo);
-            pt.setString(2, firstName);
-            pt.setString(3, lastName);
-            pt.setString(4, phoneNumber);
-            pt.setString(5, emailAddress);
-            pt.setString(6, clientCategory);
-            pt.execute();
-            System.out.println("you have saved");
+    //        String emailAddress=txtemailAddress.getText();
+      //      String clientCategory=txtclientCategory.getSelectedItem().toString();
+            
+//            String sql="Insert into Client values(?,?,?,?,?,?)";
+//            PreparedStatement pt=conn.prepareStatement(sql);
+//            pt.setString(1, regNo);
+//            pt.setString(2, firstName);
+//            pt.setString(3, lastName);
+//            pt.setString(4, phoneNumber);
+//            pt.setString(5, emailAddress);
+//            pt.setString(6, clientCategory);
+//            pt.execute();
+//            System.out.println("you have saved");
             UpdateTable();
-            pt.close();
-        } catch (SQLException ex) {
+//            pt.close();
+        } catch (Exception ex) {
           ex.printStackTrace();
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
+    private void btnphotoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnphotoActionPerformed
+        // TODO add your handling code here:
+       try{
+           JFileChooser fc = new JFileChooser();
+           fc.showOpenDialog(null);
+           File f = fc.getSelectedFile();
+           String filename = f.getAbsolutePath();
+           Image getAbsolutePAth = null;
+           ImageIcon icon =  new ImageIcon(filename);
+           Image image = icon.getImage().getScaledInstance(photo.getWidth(), photo.getHeight(), Image.SCALE_SMOOTH);
+           photo.setIcon(icon);
+       } catch(Exception e){
+           
+       }
+    }//GEN-LAST:event_btnphotoActionPerformed
+
+    private void photoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_photoMouseClicked
+        // TODO add your handling code here:
+        try{
+            JFileChooser fc = new JFileChooser();
+            FileFilter ff = new FileNameExtensionFilter("images","png","jpeg");
+            fc.addChoosableFileFilter(ff);
+            int open = fc.showOpenDialog(this);
+            if(open == javax.swing.JFileChooser.APPROVE_OPTION){
+                java.io.File path = fc.getSelectedFile();
+                String file_name = path.toString();
+               // path.setText(file_name);
+            }
+        }catch(Exception e){
+            
+        }
+    }//GEN-LAST:event_photoMouseClicked
+
+    private void txtTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtTableMouseClicked
+        // TODO add your handling code here:
+         int index = this.txtTable.getSelectedRow();
+        String regNo = this.txtTable.getValueAt(index, 0).toString();
+         client = this.clientController.find(regNo);
+         this.txtregNo.setText(client.getRegNo());
+         this.txtfirstName.setText(client.getFirstName());
+         this.txtlastName.setText(client.getLastName());
+         this.txtphoneNumber.setText(client.getPhoneNumber());
+         this.txtemailAddress.setText(client.getEmailAddress());
+         this.txtclientCategory.setSelectedItem(client.getClientCategory());
+    }//GEN-LAST:event_txtTableMouseClicked
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        try{
+            int result = JOptionPane.showConfirmDialog(null, "Are you", "confirm", JOptionPane.YES_NO_OPTION);
+            if(result == JOptionPane.YES_OPTION){
+                int index= this.txtTable.getSelectedRow();
+                String regNo = this.txtTable.getValueAt(index, 0).toString();
+                client = this.clientController.find(regNo);
+                this.clientController.delete(client);
+                UpdateTable();
+            }
+        }catch(Exception e){
+            
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        // TODO add your handling code here:
+        try{
+          client.setRegNo(this.txtregNo.getText());
+        client.setFirstName(this.txtfirstName.getText());
+        client.setLastName(this.txtlastName.getText());
+        client.setPhoneNumber(this.txtphoneNumber.getText());
+        client.setEmailAddress(this.txtemailAddress.getText());
+        client.setClientCategory(this.txtclientCategory.getSelectedItem().toString());
+        client.setPhoto(this.photo.getText().getBytes());
+        this.clientController.update(client);  
+        UpdateTable();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnphoto;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
