@@ -45,12 +45,19 @@ public class Book extends javax.swing.JInternalFrame {
     @SuppressWarnings("unchecked")
     
     public void clear(){
+        // clear fields of book
         this.txtbookId.setText("");
         this.txttitle.setText("");
         this.txtPublishingHouse.setText("");
         this.txtDateOfPublication.setDate(null);
         this.txtauthor.setText("");
         this.txtpages.setText("");
+        
+        // clear fields of bookCategory
+        
+        this.txtCategoryId.setText("");
+        this.txtCategoryName.setText("");
+        
     }
     
     public void UpdateTable(){
@@ -176,11 +183,26 @@ public class Book extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        txtTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(txtTable);
 
         jButton1Delete.setText("Delete");
+        jButton1Delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1DeleteActionPerformed(evt);
+            }
+        });
 
         jButton2Update.setText("Update");
+        jButton2Update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2UpdateActionPerformed(evt);
+            }
+        });
 
         jButton3Clear.setText(" Clear");
         jButton3Clear.addActionListener(new java.awt.event.ActionListener() {
@@ -447,9 +469,14 @@ public class Book extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCategoryIdActionPerformed
 
     private void btnaddBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnaddBookActionPerformed
-
-        
-//     try {
+   try {
+       bookCategory.setCategoryId(this.txtCategoryId.getText());
+       bookCategory.setCategoryName(this.txtCategoryName.getText());
+       this.categoryController.create(bookCategory);
+       JOptionPane.showMessageDialog(null, "Added a category successful");
+       UpdateTable();
+       clear();
+//   JDBC querying
 //         // TODO add your handling code here:
 //         String categoryName=txtCategoryName.getText();
 //         String categoryId=txtCategoryId.getText();
@@ -461,9 +488,10 @@ public class Book extends javax.swing.JInternalFrame {
 //         System.out.println("saved book categoty");
 //         UpdateTableCategory();
 //         pst.close();
-//     } catch (SQLException ex) {
-//         Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
-//     }
+     } catch (Exception ex) {
+         Logger.getLogger(Book.class.getName()).log(Level.SEVERE, null, ex);
+         JOptionPane.showMessageDialog(null, ex.getMessage());
+     }
     }//GEN-LAST:event_btnaddBookActionPerformed
 
     private void txtbookIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbookIdActionPerformed
@@ -513,7 +541,6 @@ public class Book extends javax.swing.JInternalFrame {
     private void update(){
         int index = this.txttable1.getSelectedRow();
         String bookId = this.txttable1.getValueAt(index, 0).toString();
-        //   String pages = Integer.toString(book.getPages());
         ModdleEntity.Book book = this.bookController.find(bookId);
         this.txtbookId.setText(book.getBookId());
         this.txttitle.setText(book.getBookTitle());
@@ -525,7 +552,6 @@ public class Book extends javax.swing.JInternalFrame {
     private void txttable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txttable1MouseClicked
         // TODO add your handling code here:
         try{
-       
             update();
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -563,16 +589,70 @@ public class Book extends javax.swing.JInternalFrame {
 
     private void jButton3ClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ClearActionPerformed
         // TODO add your handling code here:
+        clear();
     }//GEN-LAST:event_jButton3ClearActionPerformed
+
+    private void txtTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtTableMouseClicked
+        // TODO add your handling code here:
+        try{
+            int index = this.txtTable.getSelectedRow();
+            String categoryId = this.txtTable.getValueAt(index, 0).toString();
+            bookCategory = this.categoryController.find(categoryId);
+            this.txtCategoryId.setText(bookCategory.getCategoryId());
+            this.txtCategoryName.setText(bookCategory.getCategoryName());
+        }
+        catch(Exception e){
+            
+        }
+        
+    }//GEN-LAST:event_txtTableMouseClicked
+
+    private void jButton1DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1DeleteActionPerformed
+        // TODO add your handling code here:
+        try{
+             int result = JOptionPane.showConfirmDialog(null, "Are you Sure", "confirm",JOptionPane.YES_NO_OPTION);
+        if(result == JOptionPane.YES_OPTION){
+         int index1 = this.txtTable.getSelectedRow();
+            String categoryId = this.txtTable.getValueAt(index1, 0).toString();
+            bookCategory = this.categoryController.find(categoryId);
+            this.categoryController.delete(bookCategory);
+            UpdateTable();
+        }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        clear();
+    }//GEN-LAST:event_jButton1DeleteActionPerformed
+
+    private void jButton2UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2UpdateActionPerformed
+        // TODO add your handling code here:
+        try{
+            bookCategory.setCategoryId(this.txtCategoryId.getText());
+            bookCategory.setCategoryName(this.txtCategoryName.getText());
+            this.categoryController.update(bookCategory);
+            UpdateTable();
+            clear();
+            
+        }catch(Exception e){
+            
+        }
+    }//GEN-LAST:event_jButton2UpdateActionPerformed
 
     private void Delete(){
          try{
         int result = JOptionPane.showConfirmDialog(null, "Are you Sure", "confirm",JOptionPane.YES_NO_OPTION);
         if(result == JOptionPane.YES_OPTION){
+            
+            // book delete
+            
             int index = this.txttable1.getSelectedRow();
             String bookId = this.txttable1.getValueAt(index, 0).toString();
             book = this.bookController.find(bookId);
             this.bookController.delete(book);
+            
+            // Category Delete
+            
+            
             UpdateTable();
         }
         }catch(Exception e){
