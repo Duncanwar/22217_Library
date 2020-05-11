@@ -23,12 +23,12 @@ public class Client  implements java.io.Serializable {
      private String phoneNumber;
      private String emailAddress;
      private String clientCategory;
-     private String photo;
+     private byte[] photo;
 
     public Client() {
     }
 
-    public Client(String regNo, String firstName, String lastName, String phoneNumber, String emailAddress, String clientCategory, String photo) {
+    public Client(String regNo, String firstName, String lastName, String phoneNumber, String emailAddress, String clientCategory, byte[] photo) {
        this.regNo = regNo;
        this.firstName = firstName;
        this.lastName = lastName;
@@ -101,12 +101,12 @@ public class Client  implements java.io.Serializable {
     }
 
     
-    @Column(name="photo", nullable=false, length=65535)
-    public String getPhoto() {
+    @Column(name="photo", nullable=false, columnDefinition="blob")
+    public byte[] getPhoto() {
         return this.photo;
     }
     
-    public void setPhoto(String photo) {
+    public void setPhoto(byte[] photo) {
         this.photo = photo;
     }
 
