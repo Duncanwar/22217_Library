@@ -26,17 +26,19 @@ public class Book  implements java.io.Serializable {
      private Date dateOfPublication;
      private String author;
      private int pages;
+     private String categoryId;
 
     public Book() {
     }
 
-    public Book(String bookId, String bookTitle, String publishingHouse, Date dateOfPublication, String author, int pages) {
+    public Book(String bookId, String bookTitle, String publishingHouse, Date dateOfPublication, String author, int pages, String categoryId) {
        this.bookId = bookId;
        this.bookTitle = bookTitle;
        this.publishingHouse = publishingHouse;
        this.dateOfPublication = dateOfPublication;
        this.author = author;
        this.pages = pages;
+       this.categoryId = categoryId;
     }
    
      @Id 
@@ -100,6 +102,16 @@ public class Book  implements java.io.Serializable {
     public void setPages(int pages) {
         this.pages = pages;
     }
+    
+    @Column(name="categoryId")
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+    
 
 
 

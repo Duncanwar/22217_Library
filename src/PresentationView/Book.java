@@ -6,14 +6,21 @@
 package PresentationView;
 
 import ControllerUtil.BookController;
+import ControllerUtil.bookCategoryController;
 import ModdleEntity.*;
 import ControllerUtil.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringJoiner;
 import javax.swing.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import net.proteanit.sql.DbUtils;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 /**
  *
  * @author duncan
@@ -23,6 +30,9 @@ public class Book extends javax.swing.JInternalFrame {
  private final bookCategoryController categoryController = new bookCategoryController();
  private ModdleEntity.BookCategory bookCategory = new ModdleEntity.BookCategory();
  private ModdleEntity.Book book = new ModdleEntity.Book();
+ Session session = HibernateUtil.getSessionFactory().openSession();
+ Session session1 = HibernateUtil.getSessionFactory().openSession();
+        Transaction tr = null;
     Connection conn;
  Statement st;
  PreparedStatement pst;
@@ -35,6 +45,7 @@ public class Book extends javax.swing.JInternalFrame {
       // conn=DatabaseConnection.getConnection();
      UpdateTable();  
      //UpdateTableCategory();
+     fillCombo();
     }
 
     /**
@@ -59,7 +70,30 @@ public class Book extends javax.swing.JInternalFrame {
         this.txtCategoryName.setText("");
         
     }
-    
+    public void fillCombo(){
+        
+        tr=session.beginTransaction();
+        SQLQuery query = session.createSQLQuery("select category_Name from book_category");
+        List rs = query.list();
+        for(Object cl: rs){
+            String name = cl.toString();
+            this.jComboBoxbookCategroy.addItem(name);
+            
+       }
+        session.close();
+// JComboBox<String> combo = new JComboBox<>();
+////       this.categoryController.findAll().stream().forEach((category)->{
+////           combo.addItem(new Object[]{category.getCategoryName()});
+////       });
+////       this.jComboBoxbookCategroy.addItem(combo);
+//       List<BookCategory> categ = new ArrayList<>();
+//       for(BookCategory catName : categ){
+//           StringJoiner stri = new StringJoiner("");
+//           stri.add(catName.getCategoryName());
+//           combo.addItem(stri.toString());
+//       }
+//       this.jComboBoxbookCategroy.add(combo);
+    }
     public void UpdateTable(){
         DefaultTableModel dtm = new DefaultTableModel();
         DefaultTableModel dtm1 = new DefaultTableModel();
@@ -71,8 +105,11 @@ public class Book extends javax.swing.JInternalFrame {
         dtm.addColumn(("dateOfPublication"));
         dtm.addColumn(("author"));
         dtm.addColumn(("pages"));
+        dtm.addColumn(("bookcategory"));
         this.bookController.findAll().stream().forEach((book) -> {
-            dtm.addRow(new Object[] {book.getBookId(), book.getBookTitle(), book.getPublishingHouse() , book.getDateOfPublication() , book.getAuthor(), book.getPages()});
+            dtm.addRow(new Object[] {
+                book.getBookId(), book.getBookTitle(), book.getPublishingHouse() , book.getDateOfPublication() , book.getAuthor(), book.getPages(), book.getCategoryId()
+            });
      });
         this.txttable1.setModel(dtm);
         this.categoryController.findAll().stream().forEach((bookCategory)->{
@@ -520,7 +557,12 @@ public class Book extends javax.swing.JInternalFrame {
             book.setDateOfPublication(this.txtDateOfPublication.getDate());
             book.setAuthor(this.txtauthor.getText());
             book.setPages(Integer.valueOf(this.txtpages.getText()));
-            
+            tr= session1.beginTransaction();
+            SQLQuery query = session1.createSQLQuery("select category_Id from book_category where category_Name=?");
+            query.setParameter(0, this.jComboBoxbookCategroy.getSelectedItem().toString());
+            List rn = query.list();
+            book.setCategoryId(rn.toString());
+            session1.close();
             this.bookController.create(book);
             JOptionPane.showMessageDialog(null, "Add new book successfully");
             UpdateTable();
@@ -562,6 +604,7 @@ public class Book extends javax.swing.JInternalFrame {
         this.txtDateOfPublication.setDate(book.getDateOfPublication());
         this.txtauthor.setText(book.getAuthor());
         this.txtpages.setText(Integer.toString(book.getPages()));
+        this.jComboBoxbookCategroy.setSelectedItem(bookCategory.getCategoryName());
     }
     private void txttable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txttable1MouseClicked
         // TODO add your handling code here:
