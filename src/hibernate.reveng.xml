@@ -6,4 +6,5 @@
   <table-filter match-name="book_category"/>
   <table-filter match-name="Book"/>
   <table-filter match-name="Client"/>
+  <table-filter match-name="Login"/>
 </hibernate-reverse-engineering>

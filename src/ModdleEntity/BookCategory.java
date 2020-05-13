@@ -1,5 +1,5 @@
 package ModdleEntity;
-// Generated May 10, 2020 9:00:41 PM by Hibernate Tools 4.3.1
+// Generated May 13, 2020 9:28:36 AM by Hibernate Tools 4.3.1
 
 
 import javax.persistence.Column;

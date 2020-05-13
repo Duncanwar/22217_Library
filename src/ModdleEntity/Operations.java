@@ -1,5 +1,5 @@
 package ModdleEntity;
-// Generated May 10, 2020 9:00:41 PM by Hibernate Tools 4.3.1
+// Generated May 13, 2020 9:28:36 AM by Hibernate Tools 4.3.1
 
 
 import java.util.Date;
@@ -21,20 +21,24 @@ public class Operations  implements java.io.Serializable {
 
 
      private String firstName;
+     private String clientId;
      private String bookName;
      private Date dateTime;
      private String status;
      private String operationCategory;
+     private Date returnDate;
 
     public Operations() {
     }
 
-    public Operations(String firstName, String bookName, Date dateTime, String status, String operationCategory) {
+    public Operations(String firstName, String clientId, String bookName, Date dateTime, String status, String operationCategory, Date returnDate) {
        this.firstName = firstName;
+       this.clientId = clientId;
        this.bookName = bookName;
        this.dateTime = dateTime;
        this.status = status;
        this.operationCategory = operationCategory;
+       this.returnDate = returnDate;
     }
    
      @Id 
@@ -47,6 +51,16 @@ public class Operations  implements java.io.Serializable {
     
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    
+    @Column(name="clientId", nullable=false, length=10)
+    public String getClientId() {
+        return this.clientId;
+    }
+    
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     
@@ -87,6 +101,16 @@ public class Operations  implements java.io.Serializable {
     
     public void setOperationCategory(String operationCategory) {
         this.operationCategory = operationCategory;
+    }
+
+    @Temporal(TemporalType.DATE)
+    @Column(name="returnDate", nullable=false, length=10)
+    public Date getReturnDate() {
+        return this.returnDate;
+    }
+    
+    public void setReturnDate(Date returnDate) {
+        this.returnDate = returnDate;
     }
 
 

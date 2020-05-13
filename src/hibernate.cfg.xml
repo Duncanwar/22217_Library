@@ -13,5 +13,11 @@
     <mapping class="ModdleEntity.Book"/>
     <mapping class="ModdleEntity.Client"/>
     <mapping class="ModdleEntity.BookCategory"/>
+    <mapping class="ModdleEntity.Login"/>
+    <mapping resource="ControllerUtil/BookCategory.hbm.xml"/>
+    <mapping resource="ControllerUtil/Operations.hbm.xml"/>
+    <mapping resource="ControllerUtil/Client.hbm.xml"/>
+    <mapping resource="ControllerUtil/Login.hbm.xml"/>
+    <mapping resource="ControllerUtil/Book.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
