@@ -1,5 +1,5 @@
 package ModdleEntity;
-// Generated May 10, 2020 9:00:41 PM by Hibernate Tools 4.3.1
+// Generated May 13, 2020 9:28:36 AM by Hibernate Tools 4.3.1
 
 
 import javax.persistence.Column;
@@ -18,23 +18,23 @@ public class Client  implements java.io.Serializable {
 
 
      private String regNo;
+     private String clientCategory;
+     private String emailAddress;
      private String firstName;
      private String lastName;
      private String phoneNumber;
-     private String emailAddress;
-     private String clientCategory;
      private byte[] photo;
 
     public Client() {
     }
 
-    public Client(String regNo, String firstName, String lastName, String phoneNumber, String emailAddress, String clientCategory, byte[] photo) {
+    public Client(String regNo, String clientCategory, String emailAddress, String firstName, String lastName, String phoneNumber, byte[] photo) {
        this.regNo = regNo;
+       this.clientCategory = clientCategory;
+       this.emailAddress = emailAddress;
        this.firstName = firstName;
        this.lastName = lastName;
        this.phoneNumber = phoneNumber;
-       this.emailAddress = emailAddress;
-       this.clientCategory = clientCategory;
        this.photo = photo;
     }
    
@@ -48,6 +48,26 @@ public class Client  implements java.io.Serializable {
     
     public void setRegNo(String regNo) {
         this.regNo = regNo;
+    }
+
+    
+    @Column(name="clientCategory", nullable=false, length=20)
+    public String getClientCategory() {
+        return this.clientCategory;
+    }
+    
+    public void setClientCategory(String clientCategory) {
+        this.clientCategory = clientCategory;
+    }
+
+    
+    @Column(name="emailAddress", nullable=false, length=20)
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+    
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     
@@ -78,26 +98,6 @@ public class Client  implements java.io.Serializable {
     
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    
-    @Column(name="emailAddress", nullable=false, length=20)
-    public String getEmailAddress() {
-        return this.emailAddress;
-    }
-    
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    
-    @Column(name="clientCategory", nullable=false, length=20)
-    public String getClientCategory() {
-        return this.clientCategory;
-    }
-    
-    public void setClientCategory(String clientCategory) {
-        this.clientCategory = clientCategory;
     }
 
     

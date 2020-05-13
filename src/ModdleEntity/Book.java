@@ -1,5 +1,5 @@
 package ModdleEntity;
-// Generated May 10, 2020 9:00:41 PM by Hibernate Tools 4.3.1
+// Generated May 13, 2020 9:28:36 AM by Hibernate Tools 4.3.1
 
 
 import java.util.Date;
@@ -21,24 +21,33 @@ public class Book  implements java.io.Serializable {
 
 
      private String bookId;
-     private String bookTitle;
-     private String publishingHouse;
-     private Date dateOfPublication;
      private String author;
-     private int pages;
+     private String bookTitle;
      private String categoryId;
+     private Date dateOfPublication;
+     private int pages;
+     private String publishingHouse;
 
     public Book() {
     }
 
-    public Book(String bookId, String bookTitle, String publishingHouse, Date dateOfPublication, String author, int pages, String categoryId) {
+	
+    public Book(String bookId, String author, String bookTitle, Date dateOfPublication, int pages, String publishingHouse) {
+        this.bookId = bookId;
+        this.author = author;
+        this.bookTitle = bookTitle;
+        this.dateOfPublication = dateOfPublication;
+        this.pages = pages;
+        this.publishingHouse = publishingHouse;
+    }
+    public Book(String bookId, String author, String bookTitle, String categoryId, Date dateOfPublication, int pages, String publishingHouse) {
        this.bookId = bookId;
-       this.bookTitle = bookTitle;
-       this.publishingHouse = publishingHouse;
-       this.dateOfPublication = dateOfPublication;
        this.author = author;
-       this.pages = pages;
+       this.bookTitle = bookTitle;
        this.categoryId = categoryId;
+       this.dateOfPublication = dateOfPublication;
+       this.pages = pages;
+       this.publishingHouse = publishingHouse;
     }
    
      @Id 
@@ -54,6 +63,16 @@ public class Book  implements java.io.Serializable {
     }
 
     
+    @Column(name="author", nullable=false, length=20)
+    public String getAuthor() {
+        return this.author;
+    }
+    
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    
     @Column(name="bookTitle", nullable=false, length=20)
     public String getBookTitle() {
         return this.bookTitle;
@@ -64,13 +83,13 @@ public class Book  implements java.io.Serializable {
     }
 
     
-    @Column(name="publishingHouse", nullable=false, length=20)
-    public String getPublishingHouse() {
-        return this.publishingHouse;
+    @Column(name="categoryId")
+    public String getCategoryId() {
+        return this.categoryId;
     }
     
-    public void setPublishingHouse(String publishingHouse) {
-        this.publishingHouse = publishingHouse;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     @Temporal(TemporalType.DATE)
@@ -84,16 +103,6 @@ public class Book  implements java.io.Serializable {
     }
 
     
-    @Column(name="author", nullable=false, length=20)
-    public String getAuthor() {
-        return this.author;
-    }
-    
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    
     @Column(name="pages", nullable=false)
     public int getPages() {
         return this.pages;
@@ -102,16 +111,16 @@ public class Book  implements java.io.Serializable {
     public void setPages(int pages) {
         this.pages = pages;
     }
-    
-    @Column(name="categoryId")
-    public String getCategoryId() {
-        return categoryId;
-    }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+    
+    @Column(name="publishingHouse", nullable=false, length=20)
+    public String getPublishingHouse() {
+        return this.publishingHouse;
     }
     
+    public void setPublishingHouse(String publishingHouse) {
+        this.publishingHouse = publishingHouse;
+    }
 
 
 

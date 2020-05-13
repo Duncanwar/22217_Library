@@ -78,7 +78,6 @@ public class Book extends javax.swing.JInternalFrame {
         for(Object cl: rs){
             String name = cl.toString();
             this.jComboBoxbookCategroy.addItem(name);
-            
        }
         session.close();
 // JComboBox<String> combo = new JComboBox<>();
